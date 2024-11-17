@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1731843094799,
+      "tag": "0000_heavy_exiles",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1731843961729,
+      "tag": "0001_amused_black_crow",
+      "breakpoints": true
+    }
+  ]
+}
