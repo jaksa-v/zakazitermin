@@ -1,3 +1,4 @@
+import { hashPassword } from "../auth/session";
 import { db } from "./index";
 import {
   users,
@@ -28,16 +29,14 @@ async function seed() {
       {
         email: "john@example.com",
         name: "John Doe",
-        passwordHash:
-          "$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNek4B5fHCb8JIjAGcy", // "password123"
+        passwordHash: await hashPassword("password123"),
         createdAt: new Date(),
         deletedAt: null,
       },
       {
         email: "jane@example.com",
         name: "Jane Smith",
-        passwordHash:
-          "$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNek4B5fHCb8JIjAGcy", // "password123"
+        passwordHash: await hashPassword("password123"),
         createdAt: new Date(),
         deletedAt: null,
       },
