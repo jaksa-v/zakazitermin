@@ -110,10 +110,12 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
   });
 
   return (
-    <div className="mx-auto space-y-6">
-      <h1 className="my-4 text-2xl font-bold">Browse Venues</h1>
-      <div className="flex flex-col md:flex-row gap-4 items-center">
-        <div className="relative w-full flex-1">
+    <div className="mx-auto space-y-4 sm:space-y-6">
+      <h1 className="my-3 sm:my-4 text-xl sm:text-2xl font-bold">
+        Browse Venues
+      </h1>
+      <div className="flex flex-col gap-2 sm:gap-4">
+        <div className="relative w-full">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
           <Input
             placeholder="Search venues by name or city..."
@@ -122,71 +124,83 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
             onChange={(e) => setSearchInput(e.target.value)}
           />
         </div>
-        <Select value={currentSport} onValueChange={updateSport}>
-          <SelectTrigger className="w-full md:w-[150px]">
-            <SelectValue placeholder="Filter by sport" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Sports</SelectItem>
-            {sports.map((sport) => (
-              <SelectItem key={sport.id} value={sport.id.toString()}>
-                {sport.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={currentIndoor} onValueChange={updateIndoor}>
-          <SelectTrigger className="w-full md:w-[150px]">
-            <SelectValue placeholder="Indoor/Outdoor" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Courts</SelectItem>
-            <SelectItem value="true">Indoor</SelectItem>
-            <SelectItem value="false">Outdoor</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-row gap-2 sm:gap-4">
+          <Select value={currentSport} onValueChange={updateSport}>
+            <SelectTrigger className="flex-1">
+              <SelectValue placeholder="Sport" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Sports</SelectItem>
+              {sports.map((sport) => (
+                <SelectItem key={sport.id} value={sport.id.toString()}>
+                  {sport.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={currentIndoor} onValueChange={updateIndoor}>
+            <SelectTrigger className="flex-1">
+              <SelectValue placeholder="Indoor/Outdoor" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Courts</SelectItem>
+              <SelectItem value="true">Indoor</SelectItem>
+              <SelectItem value="false">Outdoor</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid gap-4 sm:gap-6">
         {filteredVenues.map((venue) => (
           <Card key={venue.id} className="overflow-hidden">
             <CardHeader
-              className="cursor-pointer"
+              className="cursor-pointer py-3 px-4 sm:p-6"
               onClick={() => toggleVenue(venue.id)}
             >
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-start sm:items-center">
                 <div>
-                  <CardTitle>{venue.name}</CardTitle>
-                  <CardDescription className="flex items-center gap-2 mt-1">
-                    <MapPin className="h-4 w-4" />
-                    {venue.address}, {venue.city}
+                  <CardTitle className="text-lg sm:text-xl">
+                    {venue.name}
+                  </CardTitle>
+                  <CardDescription className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-4 w-4" />
+                      {venue.address}, {venue.city}
+                    </span>
                     {venue.phoneNumber && (
                       <span className="flex items-center gap-1">
-                        • <Phone className="h-4 w-4" /> {venue.phoneNumber}
+                        <Phone className="h-4 w-4" /> {venue.phoneNumber}
                       </span>
                     )}
                   </CardDescription>
                 </div>
                 {expandedVenues[venue.id] ? (
-                  <ChevronUp className="h-6 w-6" />
+                  <ChevronUp className="h-5 w-5 sm:h-6 sm:w-6" />
                 ) : (
-                  <ChevronDown className="h-6 w-6" />
+                  <ChevronDown className="h-5 w-5 sm:h-6 sm:w-6" />
                 )}
               </div>
             </CardHeader>
 
             {expandedVenues[venue.id] && (
-              <CardContent>
+              <CardContent className="py-3 px-4 sm:p-6">
                 {venue.description && (
-                  <p className="text-gray-600 mb-4">{venue.description}</p>
+                  <p className="text-sm sm:text-base text-gray-600 mb-4">
+                    {venue.description}
+                  </p>
                 )}
 
                 <div className="mb-4">
                   <h4 className="font-medium mb-2">Amenities</h4>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {JSON.parse(venue.amenitiesJson).map(
                       (amenity: string, index: number) => (
-                        <Badge key={index} variant="secondary">
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="text-xs sm:text-sm"
+                        >
                           {amenity}
                         </Badge>
                       )
@@ -196,7 +210,7 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
 
                 <div>
                   <h4 className="font-medium mb-2">Courts & Fields</h4>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-3 grid-cols-1 xs:grid-cols-2 lg:grid-cols-3">
                     {venue.courts
                       .filter(
                         (court) =>
@@ -207,15 +221,16 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
                       )
                       .map((court) => (
                         <Card key={court.id} className="bg-gray-50">
-                          <CardContent className="p-4">
-                            <div className="font-medium">{court.name}</div>
-                            <div className="text-sm text-gray-600 mt-1">
+                          <CardContent className="p-3 sm:p-4">
+                            <div className="font-medium text-sm sm:text-base">
+                              {court.name}
+                            </div>
+                            <div className="text-xs sm:text-sm text-gray-600 mt-1">
                               {court.isIndoor ? "Indoor" : "Outdoor"} • $
                               {court.basePrice}/hour
                             </div>
                             {court.description && (
-                              // Truncate description to 5 words and add ellipsis if needed
-                              <p className="text-sm text-gray-600 mt-2">
+                              <p className="text-xs sm:text-sm text-gray-600 mt-2">
                                 {court.description
                                   .split(" ")
                                   .slice(0, 5)
@@ -224,7 +239,10 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
                                   "..."}
                               </p>
                             )}
-                            <Button className="w-full mt-3" variant="outline">
+                            <Button
+                              className="w-full mt-2 sm:mt-3 h-8 sm:h-10 text-sm"
+                              variant="outline"
+                            >
                               Book Now
                             </Button>
                           </CardContent>
