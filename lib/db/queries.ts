@@ -35,3 +35,18 @@ export async function getUser() {
 
   return user[0];
 }
+
+export async function getVenuesWithCourts() {
+  // get venues along with their courts
+  const venuesWithCourts = await db.query.venues.findMany({
+    with: {
+      courts: true,
+    },
+  });
+
+  return venuesWithCourts;
+}
+
+export async function getSports() {
+  return db.query.sports.findMany();
+}

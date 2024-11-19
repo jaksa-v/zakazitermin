@@ -134,6 +134,11 @@ export type NewVenue = typeof venues.$inferInsert;
 export type Court = typeof courts.$inferSelect;
 export type NewCourt = typeof courts.$inferInsert;
 
+export type VenueWithCourts = Venue & { courts: Court[] };
+
+export type Sport = typeof sports.$inferSelect;
+export type NewSport = typeof sports.$inferInsert;
+
 export type Reservation = typeof reservations.$inferSelect;
 export type NewReservation = typeof reservations.$inferInsert;
 
