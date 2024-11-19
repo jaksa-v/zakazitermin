@@ -63,7 +63,7 @@ const ReservationModal: FC<ReservationModalProps> = ({
           const existingTime = parseInt(t.split(":")[0]);
           return Math.abs(existingTime - timeValue) === 1;
         });
-        
+
         if (prev.length === 0 || hasAdjacentSlot) {
           const newTimes = [...prev, time].sort();
           // Ensure times are consecutive
@@ -139,7 +139,9 @@ const ReservationModal: FC<ReservationModalProps> = ({
                 {timeSlots.map((time) => (
                   <Button
                     key={time}
-                    variant={selectedTimes.includes(time) ? "default" : "outline"}
+                    variant={
+                      selectedTimes.includes(time) ? "default" : "outline"
+                    }
                     className="w-full"
                     onClick={() => handleTimeClick(time)}
                   >
@@ -155,23 +157,25 @@ const ReservationModal: FC<ReservationModalProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-between items-center pt-4 border-t">
+        <div className="flex flex-wrap justify-between items-center gap-4 pt-4 border-t">
           <div className="text-sm">
-            <p className="font-medium">
+            <p className="font-medium whitespace-nowrap">
               ${court.basePrice * selectedTimes.length}/total
             </p>
             {selectedTimes.length > 0 && (
               <p className="text-gray-600">
-                Selected: {format(selectedDate, "MMM d")} {selectedTimes.length} hour{selectedTimes.length > 1 ? 's' : ''} ({selectedTimes.join(" - ")})
+                Selected: {format(selectedDate, "MMM d")} {selectedTimes.length}{" "}
+                hour{selectedTimes.length > 1 ? "s" : ""} (
+                {selectedTimes.join(" - ")})
               </p>
             )}
           </div>
-          <div className="space-x-2">
+          <div className="ml-auto flex space-x-2 shrink-0">
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button 
-              disabled={selectedTimes.length === 0} 
+            <Button
+              disabled={selectedTimes.length === 0}
               onClick={handleReservation}
             >
               Reserve
