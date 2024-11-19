@@ -37,10 +37,15 @@ export async function getUser() {
 }
 
 export async function getVenuesWithCourts() {
-  // get venues along with their courts
+  // get venues along with their courts and operating hours
   const venuesWithCourts = await db.query.venues.findMany({
     with: {
-      courts: true,
+      courts: {
+        with: {
+          sport: true,
+        },
+      },
+      operatingHours: true,
     },
   });
 

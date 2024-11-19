@@ -103,6 +103,13 @@ export const courtRelations = relations(courts, ({ one, many }) => ({
   reservations: many(reservations),
 }));
 
+export const operatingHoursRelations = relations(operatingHours, ({ one }) => ({
+  venue: one(venues, {
+    fields: [operatingHours.venueId],
+    references: [venues.id],
+  }),
+}));
+
 export const reservationRelations = relations(reservations, ({ one }) => ({
   user: one(users, {
     fields: [reservations.userId],
@@ -134,7 +141,10 @@ export type NewVenue = typeof venues.$inferInsert;
 export type Court = typeof courts.$inferSelect;
 export type NewCourt = typeof courts.$inferInsert;
 
-export type VenueWithCourts = Venue & { courts: Court[] };
+export type VenueWithCourts = typeof venues.$inferSelect & {
+  courts: (typeof courts.$inferSelect)[];
+  operatingHours: (typeof operatingHours.$inferSelect)[];
+};
 
 export type Sport = typeof sports.$inferSelect;
 export type NewSport = typeof sports.$inferInsert;

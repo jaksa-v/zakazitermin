@@ -20,8 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Sport, VenueWithCourts } from "@/lib/db/schema";
+import { Court, Sport, VenueWithCourts } from "@/lib/db/schema";
 import { useThrottle } from "@/lib/hooks/use-throttle";
+import ReservationModal from "@/components/reservation-modal";
 
 interface VenueBrowserProps {
   venues: VenueWithCourts[];
@@ -36,7 +37,6 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
   const [expandedVenues, setExpandedVenues] = useState<Record<number, boolean>>(
     {}
   );
-
   // Local state for search input
   const [searchInput, setSearchInput] = useState(
     searchParams.get("search") || ""
@@ -89,6 +89,12 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
       [venueId]: !prev[venueId],
     }));
   }, []);
+
+  // State for selected court and venue for reservation
+  const [selectedReservation, setSelectedReservation] = useState<{
+    court: Court;
+    venue: VenueWithCourts;
+  } | null>(null);
 
   const filteredVenues = venues.filter((venue) => {
     const matchesSearch =
@@ -242,6 +248,12 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
                             <Button
                               className="w-full mt-2 sm:mt-3 h-8 sm:h-10 text-sm"
                               variant="outline"
+                              onClick={() =>
+                                setSelectedReservation({
+                                  court,
+                                  venue,
+                                })
+                              }
                             >
                               Book Now
                             </Button>
@@ -255,6 +267,13 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
           </Card>
         ))}
       </div>
+      {selectedReservation && (
+        <ReservationModal
+          court={selectedReservation.court}
+          venue={selectedReservation.venue}
+          onClose={() => setSelectedReservation(null)}
+        />
+      )}
     </div>
   );
 };
