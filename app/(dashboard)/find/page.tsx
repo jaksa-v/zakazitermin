@@ -8,7 +8,7 @@ export default async function FindPage() {
   return (
     <main>
       <section className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8">
           <VenueBrowser venues={venues} sports={sports} />
         </div>
       </section>

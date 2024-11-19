@@ -45,6 +45,7 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
   const throttledSearch = useThrottle(searchInput, 700);
 
   const currentSport = searchParams.get("sport") || "";
+  const currentIndoor = searchParams.get("indoor") || "";
 
   // Update URL when throttled search changes
   useEffect(() => {
@@ -75,6 +76,13 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
     router.push(`?${createQueryString("sport", value)}`, { scroll: false });
   };
 
+  const updateIndoor = (value: string) => {
+    if (value === "all") {
+      value = "";
+    }
+    router.push(`?${createQueryString("indoor", value)}`, { scroll: false });
+  };
+
   const toggleVenue = useCallback((venueId: number) => {
     setExpandedVenues((prev) => ({
       ...prev,
@@ -88,12 +96,17 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
       venue.name.toLowerCase().includes(throttledSearch.toLowerCase()) ||
       venue.city.toLowerCase().includes(throttledSearch.toLowerCase());
 
-    if (!currentSport) return matchesSearch;
+    const matchesSport = !currentSport
+      ? true
+      : venue.courts.some((court) => court.sportId.toString() === currentSport);
 
-    return (
-      matchesSearch &&
-      venue.courts.some((court) => court.sportId.toString() === currentSport)
-    );
+    const matchesIndoor = !currentIndoor
+      ? true
+      : venue.courts.some(
+          (court) => court.isIndoor === (currentIndoor === "true")
+        );
+
+    return matchesSearch && matchesSport && matchesIndoor;
   });
 
   return (
@@ -110,7 +123,7 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
           />
         </div>
         <Select value={currentSport} onValueChange={updateSport}>
-          <SelectTrigger className="w-full md:w-[200px]">
+          <SelectTrigger className="w-full md:w-[150px]">
             <SelectValue placeholder="Filter by sport" />
           </SelectTrigger>
           <SelectContent>
@@ -120,6 +133,16 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
                 {sport.name}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+        <Select value={currentIndoor} onValueChange={updateIndoor}>
+          <SelectTrigger className="w-full md:w-[150px]">
+            <SelectValue placeholder="Indoor/Outdoor" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Courts</SelectItem>
+            <SelectItem value="true">Indoor</SelectItem>
+            <SelectItem value="false">Outdoor</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -177,8 +200,10 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
                     {venue.courts
                       .filter(
                         (court) =>
-                          !currentSport ||
-                          court.sportId.toString() === currentSport
+                          (!currentSport ||
+                            court.sportId.toString() === currentSport) &&
+                          (!currentIndoor ||
+                            court.isIndoor === (currentIndoor === "true"))
                       )
                       .map((court) => (
                         <Card key={court.id} className="bg-gray-50">
@@ -189,8 +214,14 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
                               {court.basePrice}/hour
                             </div>
                             {court.description && (
+                              // Truncate description to 5 words and add ellipsis if needed
                               <p className="text-sm text-gray-600 mt-2">
-                                {court.description}
+                                {court.description
+                                  .split(" ")
+                                  .slice(0, 5)
+                                  .join(" ")}
+                                {court.description.split(" ").length > 5 &&
+                                  "..."}
                               </p>
                             )}
                             <Button className="w-full mt-3" variant="outline">
