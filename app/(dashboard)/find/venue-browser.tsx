@@ -118,7 +118,7 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
         <div className="flex flex-row gap-2 sm:gap-4">
           <Select value={currentSport} onValueChange={updateSport}>
             <SelectTrigger className="flex-1">
-              <SelectValue placeholder="Sport" />
+              <SelectValue placeholder="All Sports" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Sports</SelectItem>
@@ -131,7 +131,7 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
           </Select>
           <Select value={currentIndoor} onValueChange={updateIndoor}>
             <SelectTrigger className="flex-1">
-              <SelectValue placeholder="Indoor/Outdoor" />
+              <SelectValue placeholder="All Courts" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Courts</SelectItem>
@@ -224,9 +224,9 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
                               <p className="text-xs sm:text-sm text-gray-600 mt-2">
                                 {court.description
                                   .split(" ")
-                                  .slice(0, 5)
+                                  .slice(0, 7)
                                   .join(" ")}
-                                {court.description.split(" ").length > 5 &&
+                                {court.description.split(" ").length > 7 &&
                                   "..."}
                               </p>
                             )}

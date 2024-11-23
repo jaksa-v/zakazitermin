@@ -162,13 +162,18 @@ const ReservationModal: FC<ReservationModalProps> = ({
             <p className="font-medium whitespace-nowrap">
               ${court.basePrice * selectedTimes.length}/total
             </p>
-            {selectedTimes.length > 0 && (
-              <p className="text-gray-600">
-                Selected: {format(selectedDate, "MMM d")} {selectedTimes.length}{" "}
-                hour{selectedTimes.length > 1 ? "s" : ""} (
-                {selectedTimes.join(" - ")})
-              </p>
-            )}
+            <p className="text-gray-600">
+              Selected: {format(selectedDate, "MMM d")}{" "}
+              {selectedTimes.length > 0 ? (
+                <>
+                  {selectedTimes.length} hour
+                  {selectedTimes.length > 1 ? "s" : ""}
+                  <span className="ml-2">({selectedTimes.join(" - ")})</span>
+                </>
+              ) : (
+                "No hours selected"
+              )}
+            </p>
           </div>
           <div className="ml-auto flex space-x-2 shrink-0">
             <Button variant="outline" onClick={onClose}>

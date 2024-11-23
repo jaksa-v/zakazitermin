@@ -33,7 +33,7 @@ function Header() {
             ZAKAZITERMIN
           </span>
         </Link>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 lg:space-x-4">
           {/* <Link
             href="/pricing"
             className="text-sm font-medium text-gray-700 hover:text-gray-900"
@@ -75,13 +75,13 @@ function Header() {
               <Button
                 asChild
                 variant="link"
-                className="text-sm px-4 py-2 rounded-full"
+                className="text-sm px-2 py-1 rounded-xl sm:rounded-full sm:px-4 sm:py-2"
               >
                 <Link href="/sign-in">Sign In</Link>
               </Button>
               <Button
                 asChild
-                className="bg-black hover:bg-gray-800 text-white text-sm px-4 py-2 rounded-full"
+                className="bg-black hover:bg-gray-800 text-white text-sm px-2 py-1 rounded-xl sm:rounded-full sm:px-4 sm:py-2"
               >
                 <Link href="/sign-up">Sign Up</Link>
               </Button>
