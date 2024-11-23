@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, FC } from "react";
+import { useState, useCallback, FC } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, MapPin, Phone, ChevronDown, ChevronUp } from "lucide-react";
 import {
@@ -21,7 +21,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Court, Sport, VenueWithCourts } from "@/lib/db/schema";
-import { useThrottle } from "@/lib/hooks/use-throttle";
 import ReservationModal from "@/components/reservation-modal";
 
 interface VenueBrowserProps {
@@ -37,26 +36,13 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
   const [expandedVenues, setExpandedVenues] = useState<Record<number, boolean>>(
     {}
   );
-  // Local state for search input
-  const [searchInput, setSearchInput] = useState(
-    searchParams.get("search") || ""
-  );
-  // Throttled search value for URL updates
-  const throttledSearch = useThrottle(searchInput, 700);
 
+  // Local state for search
+  const [searchInput, setSearchInput] = useState("");
+
+  // URL-based filters
   const currentSport = searchParams.get("sport") || "";
   const currentIndoor = searchParams.get("indoor") || "";
-
-  // Update URL when throttled search changes
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (throttledSearch) {
-      params.set("search", throttledSearch);
-    } else {
-      params.delete("search");
-    }
-    router.push(`?${params.toString()}`, { scroll: false });
-  }, [throttledSearch, router, searchParams]);
 
   const createQueryString = (name: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -72,7 +58,6 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
     if (value === "all") {
       value = "";
     }
-
     router.push(`?${createQueryString("sport", value)}`, { scroll: false });
   };
 
@@ -98,9 +83,9 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
 
   const filteredVenues = venues.filter((venue) => {
     const matchesSearch =
-      !throttledSearch ||
-      venue.name.toLowerCase().includes(throttledSearch.toLowerCase()) ||
-      venue.city.toLowerCase().includes(throttledSearch.toLowerCase());
+      !searchInput ||
+      venue.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+      venue.city.toLowerCase().includes(searchInput.toLowerCase());
 
     const matchesSport = !currentSport
       ? true
