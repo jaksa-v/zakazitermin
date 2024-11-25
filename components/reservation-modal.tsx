@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState, useMemo } from "react";
+import { FC, useState, useMemo, useEffect } from "react";
 import {
   format,
   addMinutes,
@@ -14,6 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import Modal from "@/components/ui/modal";
 import { Court, VenueWithCourts } from "@/lib/db/schema";
+import { createReservation } from "@/app/(dashboard)/find/actions";
+import { useActionState } from "react";
+import { toast } from "sonner";
+import { ActionState } from "@/lib/auth/middleware";
+import { Loader2 } from "lucide-react";
 
 interface ReservationModalProps {
   court: Court;
@@ -28,6 +33,20 @@ const ReservationModal: FC<ReservationModalProps> = ({
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+  const [state, formAction, pending] = useActionState<ActionState, FormData>(
+    createReservation,
+    { error: "" }
+  );
+
+  // Handle form state changes
+  useEffect(() => {
+    if (state.error) {
+      toast.error(state.error);
+    } else if (state.success) {
+      toast.success(state.success);
+      onClose();
+    }
+  }, [state, onClose]);
 
   // Get operating hours for the selected day
   const timeSlots = useMemo(() => {
@@ -80,19 +99,6 @@ const ReservationModal: FC<ReservationModalProps> = ({
     });
   };
 
-  const handleReservation = () => {
-    if (selectedTimes.length === 0) return;
-    console.log(
-      "Reserving court",
-      court.id,
-      "for",
-      selectedDate,
-      "times:",
-      selectedTimes
-    );
-    onClose();
-  };
-
   const today = startOfToday();
   const oneMonthFromNow = addDays(today, 30);
 
@@ -110,83 +116,101 @@ const ReservationModal: FC<ReservationModalProps> = ({
           </button>
         </div>
 
-        <div className="flex flex-col space-y-4">
-          <div className="flex flex-col items-start">
-            <label className="text-sm font-medium mb-2 block">
-              Select Date
-            </label>
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={(date) => {
-                if (date) {
-                  setSelectedDate(date);
-                  setSelectedTimes([]);
-                }
-              }}
-              disabled={{ before: today, after: oneMonthFromNow }}
-              className="rounded-md border"
-              weekStartsOn={1}
-            />
-          </div>
+        <form action={formAction}>
+          <input type="hidden" name="courtId" value={court.id} />
+          <input type="hidden" name="date" value={selectedDate.toISOString()} />
+          <input
+            type="hidden"
+            name="times"
+            value={JSON.stringify(selectedTimes)}
+          />
 
-          <div>
-            <label className="text-sm font-medium mb-2 block">
-              Select Hours
-            </label>
-            {timeSlots.length > 0 ? (
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                {timeSlots.map((time) => (
-                  <Button
-                    key={time}
-                    variant={
-                      selectedTimes.includes(time) ? "default" : "outline"
-                    }
-                    className="w-full"
-                    onClick={() => handleTimeClick(time)}
-                  >
-                    {time}
-                  </Button>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center text-gray-500 py-4 bg-gray-50 rounded-md">
-                No available time slots for this day
-              </div>
-            )}
-          </div>
-        </div>
+          <div className="flex flex-col space-y-4">
+            <div className="flex flex-col items-start">
+              <label className="text-sm font-medium mb-2 block">
+                Select Date
+              </label>
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => {
+                  if (date) {
+                    setSelectedDate(date);
+                    setSelectedTimes([]);
+                  }
+                }}
+                disabled={{ before: today, after: oneMonthFromNow }}
+                className="rounded-md border"
+                weekStartsOn={1}
+              />
+            </div>
 
-        <div className="flex flex-wrap justify-between items-center gap-4 pt-4 border-t">
-          <div className="text-sm">
-            <p className="font-medium whitespace-nowrap">
-              ${court.basePrice * selectedTimes.length}/total
-            </p>
-            <p className="text-gray-600">
-              Selected: {format(selectedDate, "MMM d")}{" "}
-              {selectedTimes.length > 0 ? (
-                <>
-                  {selectedTimes.length} hour
-                  {selectedTimes.length > 1 ? "s" : ""}
-                  <span className="ml-2">({selectedTimes.join(" - ")})</span>
-                </>
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Select Hours
+              </label>
+              {timeSlots.length > 0 ? (
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {timeSlots.map((time) => (
+                    <Button
+                      key={time}
+                      type="button"
+                      variant={
+                        selectedTimes.includes(time) ? "default" : "outline"
+                      }
+                      className="w-full"
+                      onClick={() => handleTimeClick(time)}
+                    >
+                      {time}
+                    </Button>
+                  ))}
+                </div>
               ) : (
-                "No hours selected"
+                <div className="text-center text-gray-500 py-4 bg-gray-50 rounded-md">
+                  No available time slots for this day
+                </div>
               )}
-            </p>
+            </div>
           </div>
-          <div className="ml-auto flex space-x-2 shrink-0">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              disabled={selectedTimes.length === 0}
-              onClick={handleReservation}
-            >
-              Reserve
-            </Button>
+
+          <div className="flex flex-wrap justify-between items-center gap-4 pt-4 border-t mt-4">
+            <div className="text-sm">
+              <p className="font-medium whitespace-nowrap">
+                ${court.basePrice * selectedTimes.length}/total
+              </p>
+              <p className="text-gray-600">
+                Selected: {format(selectedDate, "MMM d")}{" "}
+                {selectedTimes.length > 0 ? (
+                  <>
+                    {selectedTimes.length} hour
+                    {selectedTimes.length > 1 ? "s" : ""}
+                    <span className="ml-2">({selectedTimes.join(" - ")})</span>
+                  </>
+                ) : (
+                  "No hours selected"
+                )}
+              </p>
+            </div>
+            <div className="ml-auto flex space-x-2 shrink-0">
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={selectedTimes.length === 0 || pending}
+              >
+                {pending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Reserving...
+                  </>
+                ) : (
+                  "Reserve"
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
+        </form>
       </Card>
     </Modal>
   );
