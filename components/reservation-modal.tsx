@@ -14,12 +14,14 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import Modal from "@/components/ui/modal";
 import { Court, VenueWithCourts } from "@/lib/db/schema";
-import { createReservation } from "@/app/(dashboard)/find/actions";
+import { createReservation } from "@/app/(reservations)/actions";
 import { useActionState } from "react";
 import { toast } from "sonner";
 import { ActionState } from "@/lib/auth/middleware";
 import { Loader2 } from "lucide-react";
 import { useReservations } from "@/hooks/use-reservations";
+import { useUser } from "@/lib/auth";
+import Link from "next/link";
 
 interface ReservationModalProps {
   court: Court;
@@ -32,6 +34,7 @@ const ReservationModal: FC<ReservationModalProps> = ({
   venue,
   onClose,
 }) => {
+  const { user } = useUser();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [state, formAction, pending] = useActionState<ActionState, FormData>(
@@ -47,7 +50,11 @@ const ReservationModal: FC<ReservationModalProps> = ({
   // Handle form state changes
   useEffect(() => {
     if (state.error) {
-      toast.error(state.error);
+      if (state.error === "User is not authenticated") {
+        toast.error("Please sign in to make a reservation");
+      } else {
+        toast.error(state.error);
+      }
     } else if (state.success) {
       toast.success(state.success);
       onClose();
@@ -81,7 +88,7 @@ const ReservationModal: FC<ReservationModalProps> = ({
     // Check if the slot is in the past
     const now = new Date();
     const slotDate = new Date(selectedDate);
-    const [hour] = time.split(':');
+    const [hour] = time.split(":");
     slotDate.setHours(parseInt(hour), 0, 0, 0);
 
     if (slotDate <= now) {
@@ -244,19 +251,31 @@ const ReservationModal: FC<ReservationModalProps> = ({
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={selectedTimes.length === 0 || pending}
-              >
-                {pending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Reserving...
-                  </>
-                ) : (
-                  "Reserve"
-                )}
-              </Button>
+              {user ? (
+                <Button
+                  type="submit"
+                  disabled={selectedTimes.length === 0 || pending}
+                >
+                  {pending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Reserving...
+                    </>
+                  ) : (
+                    `Reserve for $${court.basePrice * selectedTimes.length}`
+                  )}
+                </Button>
+              ) : (
+                <Button asChild>
+                  <Link
+                    href={`/sign-in?redirect=${encodeURIComponent(
+                      window.location.pathname
+                    )}`}
+                  >
+                    Sign in to reserve
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </form>
