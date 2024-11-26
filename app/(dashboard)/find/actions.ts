@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { reservations } from "@/lib/db/schema";
 import { validatedActionWithUser } from "@/lib/auth/middleware";
-import { eq, and, or, between } from "drizzle-orm";
+import { eq, and, or, lte, gt, lt, gte } from "drizzle-orm";
 
 const reservationSchema = z.object({
   courtId: z.coerce.number().int(),
@@ -38,11 +38,20 @@ export const createReservation = validatedActionWithUser(
           and(
             eq(reservations.courtId, courtId),
             or(
-              between(reservations.startTime, startTime, endTime),
-              between(reservations.endTime, startTime, endTime),
+              // New reservation starts during an existing reservation
               and(
-                eq(reservations.startTime, startTime),
-                eq(reservations.endTime, endTime)
+                lte(reservations.startTime, startTime),
+                gt(reservations.endTime, startTime)
+              ),
+              // New reservation ends during an existing reservation
+              and(
+                lt(reservations.startTime, endTime),
+                gte(reservations.endTime, endTime)
+              ),
+              // Existing reservation is completely within new reservation
+              and(
+                gte(reservations.startTime, startTime),
+                lte(reservations.endTime, endTime)
               )
             ),
             eq(reservations.status, "confirmed")

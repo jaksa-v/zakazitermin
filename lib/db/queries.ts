@@ -1,8 +1,9 @@
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, gte, isNull } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { db } from ".";
 import { verifyToken } from "../auth/session";
-import { users } from "./schema";
+import { reservations, users } from "./schema";
+import { startOfToday } from "date-fns";
 
 export async function getUser() {
   const sessionCookie = (await cookies()).get("session");
@@ -54,4 +55,17 @@ export async function getVenuesWithCourts() {
 
 export async function getSports() {
   return db.query.sports.findMany();
+}
+
+export async function getUpcomingReservations(courtId: number) {
+  const today = startOfToday();
+
+  const upcomingReservations = await db.query.reservations.findMany({
+    where: and(
+      eq(reservations.courtId, courtId),
+      gte(reservations.startTime, today)
+    ),
+  });
+
+  return upcomingReservations;
 }

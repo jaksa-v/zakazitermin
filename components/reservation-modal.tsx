@@ -19,6 +19,7 @@ import { useActionState } from "react";
 import { toast } from "sonner";
 import { ActionState } from "@/lib/auth/middleware";
 import { Loader2 } from "lucide-react";
+import { useReservations } from "@/hooks/use-reservations";
 
 interface ReservationModalProps {
   court: Court;
@@ -36,6 +37,11 @@ const ReservationModal: FC<ReservationModalProps> = ({
   const [state, formAction, pending] = useActionState<ActionState, FormData>(
     createReservation,
     { error: "" }
+  );
+
+  // Fetch reservations for the selected court
+  const { reservations, isLoading: isLoadingReservations } = useReservations(
+    court.id
   );
 
   // Handle form state changes
@@ -70,7 +76,33 @@ const ReservationModal: FC<ReservationModalProps> = ({
     return slots;
   }, [selectedDate, venue.operatingHours]);
 
+  // Check if a time slot is reserved or in the past
+  const isTimeSlotReserved = (time: string) => {
+    // Check if the slot is in the past
+    const now = new Date();
+    const slotDate = new Date(selectedDate);
+    const [hour] = time.split(':');
+    slotDate.setHours(parseInt(hour), 0, 0, 0);
+
+    if (slotDate <= now) {
+      return true;
+    }
+
+    // Check if the slot is reserved
+    return reservations?.some((reservation) => {
+      const reservationDate = new Date(reservation.startTime);
+      return (
+        format(reservationDate, "yyyy-MM-dd") ===
+          format(selectedDate, "yyyy-MM-dd") &&
+        format(reservationDate, "HH:mm") === time
+      );
+    });
+  };
+
   const handleTimeClick = (time: string) => {
+    // Don't allow selecting reserved slots
+    if (isTimeSlotReserved(time)) return;
+
     setSelectedTimes((prev) => {
       if (prev.includes(time)) {
         // Remove time if already selected
@@ -149,21 +181,38 @@ const ReservationModal: FC<ReservationModalProps> = ({
               <label className="text-sm font-medium mb-2 block">
                 Select Hours
               </label>
-              {timeSlots.length > 0 ? (
+              {isLoadingReservations ? (
+                <div className="text-center text-gray-500 py-4 bg-gray-50 rounded-md">
+                  <Loader2 className="animate-spin h-5 w-5 mx-auto mb-2" />
+                  Loading available time slots...
+                </div>
+              ) : timeSlots.length > 0 ? (
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                  {timeSlots.map((time) => (
-                    <Button
-                      key={time}
-                      type="button"
-                      variant={
-                        selectedTimes.includes(time) ? "default" : "outline"
-                      }
-                      className="w-full"
-                      onClick={() => handleTimeClick(time)}
-                    >
-                      {time}
-                    </Button>
-                  ))}
+                  {timeSlots.map((time) => {
+                    const isReserved = isTimeSlotReserved(time);
+                    return (
+                      <Button
+                        key={time}
+                        type="button"
+                        variant={
+                          isReserved
+                            ? "ghost"
+                            : selectedTimes.includes(time)
+                            ? "default"
+                            : "outline"
+                        }
+                        className={`w-full ${
+                          isReserved
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : ""
+                        }`}
+                        onClick={() => handleTimeClick(time)}
+                        disabled={isReserved}
+                      >
+                        {time}
+                      </Button>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="text-center text-gray-500 py-4 bg-gray-50 rounded-md">
