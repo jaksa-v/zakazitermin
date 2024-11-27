@@ -26,7 +26,7 @@ function Header() {
 
   return (
     <header className="border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <div className="max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
           <CircleIcon className="h-6 w-6 text-purple-500" />
           <span className="ml-2 text-xl font-semibold text-gray-900">
@@ -55,9 +55,9 @@ function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="flex flex-col gap-1">
                 <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link href="/find" className="flex w-full items-center">
+                  <Link href="/" className="flex w-full items-center">
                     <Home className="mr-2 h-4 w-4" />
-                    <span>Find</span>
+                    <span>Browse</span>
                   </Link>
                 </DropdownMenuItem>
                 <form action={handleSignOut} className="w-full">

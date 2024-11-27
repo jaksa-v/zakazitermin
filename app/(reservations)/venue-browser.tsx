@@ -105,19 +105,19 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
       <h1 className="my-3 sm:my-4 text-xl sm:text-2xl font-bold">
         Browse Venues
       </h1>
-      <div className="flex flex-col gap-2 sm:gap-4">
-        <div className="relative w-full">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+        <div className="relative flex-1">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
           <Input
             placeholder="Search venues by name or city..."
-            className="pl-8"
+            className="pl-8 w-full text-sm sm:text-base"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
         </div>
         <div className="flex flex-row gap-2 sm:gap-4">
           <Select value={currentSport} onValueChange={updateSport}>
-            <SelectTrigger className="flex-1">
+            <SelectTrigger className="sm:w-[140px]">
               <SelectValue placeholder="All Sports" />
             </SelectTrigger>
             <SelectContent>
@@ -130,7 +130,7 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
             </SelectContent>
           </Select>
           <Select value={currentIndoor} onValueChange={updateIndoor}>
-            <SelectTrigger className="flex-1">
+            <SelectTrigger className="sm:w-[140px]">
               <SelectValue placeholder="All Courts" />
             </SelectTrigger>
             <SelectContent>
@@ -224,9 +224,9 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
                               <p className="text-xs sm:text-sm text-gray-600 mt-2">
                                 {court.description
                                   .split(" ")
-                                  .slice(0, 7)
+                                  .slice(0, 5)
                                   .join(" ")}
-                                {court.description.split(" ").length > 7 &&
+                                {court.description.split(" ").length > 5 &&
                                   "..."}
                               </p>
                             )}
