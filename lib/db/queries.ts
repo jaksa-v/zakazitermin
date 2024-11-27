@@ -69,3 +69,22 @@ export async function getUpcomingReservations(courtId: number) {
 
   return upcomingReservations;
 }
+
+export async function getUserReservations(userId: number) {
+  const now = new Date();
+
+  const userReservations = await db
+    .select()
+    .from(reservations)
+    .where(eq(reservations.userId, userId))
+    .orderBy(reservations.startTime);
+
+  const upcoming = userReservations.filter(
+    (reservation) => reservation.startTime > now
+  );
+  const past = userReservations.filter(
+    (reservation) => reservation.startTime <= now
+  );
+
+  return { upcoming, past };
+}

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/lib/auth";
-import { CircleIcon, Home, LogOut } from "lucide-react";
+import { CircleIcon, LogOut, NotebookText, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "../(login)/actions";
@@ -56,8 +56,14 @@ function Header() {
               <DropdownMenuContent align="end" className="flex flex-col gap-1">
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link href="/" className="flex w-full items-center">
-                    <Home className="mr-2 h-4 w-4" />
+                    <Search className="mr-2 h-4 w-4" />
                     <span>Browse</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link href="/my" className="flex w-full items-center">
+                    <NotebookText className="mr-2 h-4 w-4" />
+                    <span>My reservations</span>
                   </Link>
                 </DropdownMenuItem>
                 <form action={handleSignOut} className="w-full">
