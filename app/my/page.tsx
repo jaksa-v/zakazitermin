@@ -16,7 +16,11 @@ export default async function MyReservationsPage() {
 
   const { upcoming, past } = await getUserReservations(userId);
 
-  const ReservationList = ({ reservations }: { reservations: Reservation[] }) => (
+  const ReservationList = ({
+    reservations,
+  }: {
+    reservations: Reservation[];
+  }) => (
     <div className="space-y-4">
       {reservations.length === 0 ? (
         <p className="text-muted-foreground text-center py-8">
@@ -54,7 +58,7 @@ export default async function MyReservationsPage() {
   );
 
   return (
-    <div className="w-full max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="w-full max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8 sm:py-4">
       <h1 className="my-3 sm:my-4 text-xl sm:text-2xl font-bold">
         My Reservations
       </h1>
