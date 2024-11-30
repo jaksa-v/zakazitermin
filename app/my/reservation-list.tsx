@@ -43,7 +43,7 @@ export default function ReservationList({
                       <span className="font-medium">Price:</span> $
                       {reservation.totalPrice.toFixed(2)}
                     </p>
-                    <p className="text-sm">
+                    <div className="text-sm">
                       <span className="font-medium">Status:</span>{" "}
                       <Badge
                         variant={
@@ -56,7 +56,7 @@ export default function ReservationList({
                       >
                         {reservation.status.toLowerCase()}
                       </Badge>
-                    </p>
+                    </div>
                   </div>
                 </div>
                 {upcoming && (

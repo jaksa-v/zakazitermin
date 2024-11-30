@@ -15,6 +15,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 const navigation = [
   { name: "Browse", href: "/" },
@@ -23,9 +24,10 @@ const navigation = [
 
 function MobileNavigation() {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <button className="lg:hidden">
           <Menu className="h-6 w-6" />
@@ -34,7 +36,7 @@ function MobileNavigation() {
       <SheetContent side="left">
         <SheetHeader className="mb-3 flex gap-2">
           <SheetTitle className="">
-            <Link href="/" className="flex justify-center">
+            <Link href="/" className="flex justify-center" onClick={() => setOpen(false)}>
               <Image
                 src="/logo.png"
                 alt="Zakazitermin"
@@ -54,6 +56,7 @@ function MobileNavigation() {
                 pathname === item.href && "bg-secondary",
                 "text-foreground text-base"
               )}
+              onClick={() => setOpen(false)}
             >
               <Link href={item.href}>{item.name}</Link>
             </Button>
