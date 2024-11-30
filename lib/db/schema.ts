@@ -144,3 +144,7 @@ export type NewSport = typeof sports.$inferInsert;
 
 export type Reservation = typeof reservations.$inferSelect;
 export type NewReservation = typeof reservations.$inferInsert;
+
+export type ReservationWithCourt = typeof reservations.$inferSelect & {
+  court: typeof courts.$inferSelect;
+};

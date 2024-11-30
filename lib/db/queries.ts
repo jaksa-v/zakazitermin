@@ -39,11 +39,13 @@ export async function getUpcomingReservations(courtId: number) {
 export async function getUserReservations(userId: string) {
   const now = new Date();
 
-  const userReservations = await db
-    .select()
-    .from(reservations)
-    .where(eq(reservations.userId, userId))
-    .orderBy(reservations.startTime);
+  const userReservations = await db.query.reservations.findMany({
+    with: {
+      court: true,
+    },
+    where: eq(reservations.userId, userId),
+    orderBy: (reservations, { desc }) => desc(reservations.startTime),
+  });
 
   const upcoming = userReservations.filter(
     (reservation) => reservation.startTime > now

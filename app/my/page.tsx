@@ -1,10 +1,8 @@
 import { getUserReservations } from "@/lib/db/queries";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format } from "date-fns";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import { type Reservation } from "@/lib/db/schema";
+import ReservationList from "./reservation-list";
 
 export default async function MyReservationsPage() {
   const { userId } = await auth();
@@ -15,47 +13,6 @@ export default async function MyReservationsPage() {
   }
 
   const { upcoming, past } = await getUserReservations(userId);
-
-  const ReservationList = ({
-    reservations,
-  }: {
-    reservations: Reservation[];
-  }) => (
-    <div className="space-y-4">
-      {reservations.length === 0 ? (
-        <p className="text-muted-foreground text-center py-8">
-          No reservations found
-        </p>
-      ) : (
-        reservations.map((reservation) => (
-          <Card key={reservation.id}>
-            <CardContent className="pt-6">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-semibold">
-                    {format(new Date(reservation.startTime), "PPP")}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(reservation.startTime), "p")} -{" "}
-                    {format(new Date(reservation.endTime), "p")}
-                  </p>
-                </div>
-                {/* {new Date(reservation.startTime) > new Date() && (
-                  <button
-                    className="text-sm text-destructive hover:underline"
-                    // TODO: Implement cancelReservation action
-                    onClick={() => {}}
-                  >
-                    Cancel
-                  </button>
-                )} */}
-              </div>
-            </CardContent>
-          </Card>
-        ))
-      )}
-    </div>
-  );
 
   return (
     <div className="w-full max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8 sm:py-4">
@@ -74,11 +31,11 @@ export default async function MyReservationsPage() {
         </TabsList>
 
         <TabsContent value="upcoming" className="mt-6">
-          <ReservationList reservations={upcoming} />
+          <ReservationList reservations={upcoming} upcoming={true} />
         </TabsContent>
 
         <TabsContent value="past" className="mt-6">
-          <ReservationList reservations={past} />
+          <ReservationList reservations={past} upcoming={false} />
         </TabsContent>
       </Tabs>
     </div>
