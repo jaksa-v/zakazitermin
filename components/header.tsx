@@ -96,26 +96,28 @@ function DesktopNavigation() {
 
 export default function Header() {
   return (
-    <header className="max-w-screen-lg w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4 sm:py-0">
-      <div className="flex items-center gap-4">
-        <MobileNavigation />
-        <Link href="/" className="hidden lg:block">
-          <Image src="/logo.png" alt="Zakazitermin" width={64} height={64} />
-        </Link>
-        <DesktopNavigation />
-      </div>
-      <div className="flex items-center gap-4">
-        <ModeToggle />
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-        <SignedOut>
-          <SignInButton mode="redirect">
-            <button className="flex items-center gap-2">
-              <span>Sign in</span>
-            </button>
-          </SignInButton>
-        </SignedOut>
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b py-4 sm:py-1">
+      <div className="max-w-screen-lg w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <MobileNavigation />
+          <Link href="/" className="hidden lg:block">
+            <Image src="/logo.png" alt="Zakazitermin" width={64} height={64} />
+          </Link>
+          <DesktopNavigation />
+        </div>
+        <div className="flex items-center gap-4">
+          <ModeToggle />
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <SignedOut>
+            <SignInButton mode="redirect">
+              <button className="flex items-center gap-2">
+                <span>Sign in</span>
+              </button>
+            </SignInButton>
+          </SignedOut>
+        </div>
       </div>
     </header>
   );
