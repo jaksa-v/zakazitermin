@@ -5,11 +5,16 @@ import { db } from "@/lib/db";
 import { reservations } from "@/lib/db/schema";
 import { validatedActionWithUser } from "@/lib/actionHelpers";
 import { eq, and, or, lte, gt, lt, gte } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 const reservationSchema = z.object({
   courtId: z.coerce.number().int(),
   date: z.string(),
   times: z.string().transform((str) => JSON.parse(str) as string[]),
+});
+
+const cancelReservationSchema = z.object({
+  reservationId: z.coerce.number().int(),
 });
 
 export const createReservation = validatedActionWithUser(
@@ -84,6 +89,58 @@ export const createReservation = validatedActionWithUser(
     } catch (error) {
       console.error("Error creating reservation:", error);
       return { error: "Failed to create reservation" };
+    }
+  }
+);
+
+export const cancelReservation = validatedActionWithUser(
+  cancelReservationSchema,
+  async (data, formData, user) => {
+    try {
+      const { reservationId } = data;
+
+      // Find the reservation
+      const [reservation] = await db
+        .select()
+        .from(reservations)
+        .where(
+          and(
+            eq(reservations.id, reservationId),
+            eq(reservations.userId, user.id)
+          )
+        );
+
+      if (!reservation) {
+        return { error: "Reservation not found" };
+      }
+
+      if (reservation.status === "cancelled") {
+        return { error: "Reservation is already cancelled" };
+      }
+
+      // Check if the reservation is in the past
+      if (new Date(reservation.startTime) <= new Date()) {
+        return { error: "Cannot cancel past reservations" };
+      }
+
+      // Update the reservation status
+      const [updatedReservation] = await db
+        .update(reservations)
+        .set({
+          status: "cancelled",
+        })
+        .where(eq(reservations.id, reservationId))
+        .returning();
+
+      revalidatePath("/my");
+
+      return {
+        success: "Reservation cancelled successfully",
+        reservation: updatedReservation,
+      };
+    } catch (error) {
+      console.error("Error cancelling reservation:", error);
+      return { error: "Failed to cancel reservation" };
     }
   }
 );
