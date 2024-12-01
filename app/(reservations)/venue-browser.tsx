@@ -232,7 +232,7 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
                             )}
                             <Button
                               className="mt-2 sm:mt-3 h-8 sm:h-10 text-sm"
-                              variant="default"
+                              variant="outline"
                               onClick={() =>
                                 setSelectedReservation({
                                   court,

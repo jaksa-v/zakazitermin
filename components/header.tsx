@@ -36,12 +36,17 @@ function MobileNavigation() {
       <SheetContent side="left">
         <SheetHeader className="mb-3 flex gap-2">
           <SheetTitle className="">
-            <Link href="/" className="flex justify-center" onClick={() => setOpen(false)}>
+            <Link
+              href="/"
+              className="flex justify-center"
+              onClick={() => setOpen(false)}
+            >
               <Image
                 src="/logo.png"
                 alt="Zakazitermin"
                 width={64}
                 height={64}
+                priority={true}
               />
             </Link>
           </SheetTitle>
