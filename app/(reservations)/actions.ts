@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { reservations } from "@/lib/db/schema";
+import { courts, reservations } from "@/lib/db/schema";
 import { validatedActionWithUser } from "@/lib/actionHelpers";
 import { eq, and, or, lte, gt, lt, gte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -35,41 +35,50 @@ export const createReservation = validatedActionWithUser(
       const [endHour] = lastTime.split(":");
       endTime.setHours(parseInt(endHour) + 1, 0, 0, 0);
 
-      // Check for existing reservations in the time slot
-      const existingReservations = await db
-        .select()
-        .from(reservations)
-        .where(
-          and(
-            eq(reservations.courtId, courtId),
-            or(
-              // New reservation starts during an existing reservation
-              and(
-                lte(reservations.startTime, startTime),
-                gt(reservations.endTime, startTime)
+      const [court, existingReservations] = await Promise.all([
+        db
+          .select()
+          .from(courts)
+          .where(eq(courts.id, courtId))
+          .then((results) => results[0]),
+        db
+          .select()
+          .from(reservations)
+          .where(
+            and(
+              eq(reservations.courtId, courtId),
+              or(
+                // New reservation starts during an existing reservation
+                and(
+                  lte(reservations.startTime, startTime),
+                  gt(reservations.endTime, startTime),
+                ),
+                // New reservation ends during an existing reservation
+                and(
+                  lt(reservations.startTime, endTime),
+                  gte(reservations.endTime, endTime),
+                ),
+                // Existing reservation is completely within new reservation
+                and(
+                  gte(reservations.startTime, startTime),
+                  lte(reservations.endTime, endTime),
+                ),
               ),
-              // New reservation ends during an existing reservation
-              and(
-                lt(reservations.startTime, endTime),
-                gte(reservations.endTime, endTime)
-              ),
-              // Existing reservation is completely within new reservation
-              and(
-                gte(reservations.startTime, startTime),
-                lte(reservations.endTime, endTime)
-              )
+              eq(reservations.status, "confirmed"),
             ),
-            eq(reservations.status, "confirmed")
-          )
-        );
+          ),
+      ]);
+
+      if (!court) {
+        return { error: "Court not found" };
+      }
 
       if (existingReservations.length > 0) {
         return { error: "Time slot is already reserved" };
       }
 
       // Calculate total price (1 hour per time slot)
-      // TODO: Calculate real price
-      const totalPrice = times.length * 10;
+      const totalPrice = times.length * court.basePrice;
 
       // Create the reservation
       const [reservation] = await db
@@ -90,7 +99,7 @@ export const createReservation = validatedActionWithUser(
       console.error("Error creating reservation:", error);
       return { error: "Failed to create reservation" };
     }
-  }
+  },
 );
 
 export const cancelReservation = validatedActionWithUser(
@@ -106,8 +115,8 @@ export const cancelReservation = validatedActionWithUser(
         .where(
           and(
             eq(reservations.id, reservationId),
-            eq(reservations.userId, user.id)
-          )
+            eq(reservations.userId, user.id),
+          ),
         );
 
       if (!reservation) {
@@ -142,5 +151,5 @@ export const cancelReservation = validatedActionWithUser(
       console.error("Error cancelling reservation:", error);
       return { error: "Failed to cancel reservation" };
     }
-  }
+  },
 );
