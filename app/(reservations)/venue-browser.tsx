@@ -2,7 +2,7 @@
 
 import { useState, useCallback, FC } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, MapPin, Phone, ChevronDown, ChevronUp } from "lucide-react";
+import { MapPin, Phone, ChevronDown, ChevronUp } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -10,17 +10,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Sport, VenueWithCourts } from "@/lib/db/schema";
+import VenueFilters from "./venue-filters";
 
 interface VenueBrowserProps {
   venues: VenueWithCourts[];
@@ -42,30 +35,6 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
   // URL-based filters
   const currentSport = searchParams.get("sport") || "";
   const currentIndoor = searchParams.get("indoor") || "";
-
-  const createQueryString = (name: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set(name, value);
-    } else {
-      params.delete(name);
-    }
-    return params.toString();
-  };
-
-  const updateSport = (value: string) => {
-    if (value === "all") {
-      value = "";
-    }
-    router.push(`?${createQueryString("sport", value)}`, { scroll: false });
-  };
-
-  const updateIndoor = (value: string) => {
-    if (value === "all") {
-      value = "";
-    }
-    router.push(`?${createQueryString("indoor", value)}`, { scroll: false });
-  };
 
   const toggleVenue = useCallback((venueId: number) => {
     setExpandedVenues((prev) => ({
@@ -98,42 +67,11 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
       <h1 className="my-3 sm:my-4 text-xl sm:text-2xl font-bold">
         Browse Venues
       </h1>
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-primary" />
-          <Input
-            placeholder="Search venues by name or city..."
-            className="pl-8 w-full text-sm sm:text-base"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-row gap-2 sm:gap-4">
-          <Select value={currentSport} onValueChange={updateSport}>
-            <SelectTrigger className="sm:w-[140px]">
-              <SelectValue placeholder="All Sports" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Sports</SelectItem>
-              {sports.map((sport) => (
-                <SelectItem key={sport.id} value={sport.id.toString()}>
-                  {sport.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={currentIndoor} onValueChange={updateIndoor}>
-            <SelectTrigger className="sm:w-[140px]">
-              <SelectValue placeholder="All Courts" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Courts</SelectItem>
-              <SelectItem value="true">Indoor</SelectItem>
-              <SelectItem value="false">Outdoor</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      <VenueFilters
+        sports={sports}
+        searchInput={searchInput}
+        onSearchChange={setSearchInput}
+      />
 
       <div className="grid gap-4 sm:gap-6">
         {filteredVenues.map((venue) => (
