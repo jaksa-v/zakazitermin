@@ -1,10 +1,10 @@
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { db } from "@/lib/db";
 import { courts, venues } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import ReservationForm from "./reservation-form";
+import BackButton from "./back-button";
 
 type SearchParams = Promise<{ [key: string]: string | undefined }>;
 
@@ -43,13 +43,7 @@ export default async function ReservePage({
           <h1 className="my-3 sm:my-4 text-xl sm:text-2xl font-bold">
             Reserve {court.name}
           </h1>
-          <Link
-            href="/"
-            className="text-muted-foreground hover:text-foreground flex gap-x-2 items-center"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            <span>Back</span>
-          </Link>
+          <BackButton />
         </div>
 
         <ReservationForm court={court} venue={venue} />
