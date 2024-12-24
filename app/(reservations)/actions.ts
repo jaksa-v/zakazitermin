@@ -13,13 +13,9 @@ const reservationSchema = z.object({
   times: z.string().transform((str) => JSON.parse(str) as string[]),
 });
 
-const cancelReservationSchema = z.object({
-  reservationId: z.coerce.number().int(),
-});
-
 export const createReservation = validatedActionWithUser(
   reservationSchema,
-  async (data, formData, user) => {
+  async (data, _formData, user) => {
     try {
       const { courtId, date, times } = data;
 
@@ -51,21 +47,21 @@ export const createReservation = validatedActionWithUser(
                 // New reservation starts during an existing reservation
                 and(
                   lte(reservations.startTime, startTime),
-                  gt(reservations.endTime, startTime),
+                  gt(reservations.endTime, startTime)
                 ),
                 // New reservation ends during an existing reservation
                 and(
                   lt(reservations.startTime, endTime),
-                  gte(reservations.endTime, endTime),
+                  gte(reservations.endTime, endTime)
                 ),
                 // Existing reservation is completely within new reservation
                 and(
                   gte(reservations.startTime, startTime),
-                  lte(reservations.endTime, endTime),
-                ),
+                  lte(reservations.endTime, endTime)
+                )
               ),
-              eq(reservations.status, "confirmed"),
-            ),
+              eq(reservations.status, "confirmed")
+            )
           ),
       ]);
 
@@ -99,12 +95,16 @@ export const createReservation = validatedActionWithUser(
       console.error("Error creating reservation:", error);
       return { error: "Failed to create reservation" };
     }
-  },
+  }
 );
+
+const cancelReservationSchema = z.object({
+  reservationId: z.coerce.number().int(),
+});
 
 export const cancelReservation = validatedActionWithUser(
   cancelReservationSchema,
-  async (data, formData, user) => {
+  async (data, _formData, user) => {
     try {
       const { reservationId } = data;
 
@@ -115,8 +115,8 @@ export const cancelReservation = validatedActionWithUser(
         .where(
           and(
             eq(reservations.id, reservationId),
-            eq(reservations.userId, user.id),
-          ),
+            eq(reservations.userId, user.id)
+          )
         );
 
       if (!reservation) {
@@ -151,5 +151,5 @@ export const cancelReservation = validatedActionWithUser(
       console.error("Error cancelling reservation:", error);
       return { error: "Failed to cancel reservation" };
     }
-  },
+  }
 );

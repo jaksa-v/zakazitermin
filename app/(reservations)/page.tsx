@@ -2,8 +2,10 @@ import { getSports, getVenuesWithCourts } from "@/lib/db/queries";
 import VenueBrowser from "./venue-browser";
 
 export default async function Home() {
-  const venues = await getVenuesWithCourts();
-  const sports = await getSports();
+  const [venues, sports] = await Promise.all([
+    getVenuesWithCourts(),
+    getSports(),
+  ]);
 
   return (
     <section className="sm:py-4">
