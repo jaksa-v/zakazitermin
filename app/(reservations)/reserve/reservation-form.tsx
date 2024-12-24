@@ -48,9 +48,6 @@ const ReservationForm: FC<ReservationFormProps> = ({ court, venue }) => {
       } else {
         toast.error(state.error);
       }
-    } else if (state.success) {
-      toast.success(state.success);
-      router.push("/my");
     }
   }, [state, router]);
 
