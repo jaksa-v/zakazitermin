@@ -6,15 +6,14 @@ import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import ReservationForm from "./reservation-form";
 
-interface PageProps {
-  searchParams: {
-    courtId?: string;
-    venueId?: string;
-  };
-}
+type SearchParams = Promise<{ [key: string]: string | undefined }>;
 
-export default async function ReservePage({ searchParams }: PageProps) {
-  const { courtId, venueId } = searchParams;
+export default async function ReservePage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const { courtId, venueId } = await searchParams;
 
   if (!courtId || !venueId) {
     notFound();
