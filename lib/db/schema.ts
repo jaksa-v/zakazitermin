@@ -1,11 +1,12 @@
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+import {
+  sqliteTable,
+  text,
+  integer,
+  real,
+  index,
+} from "drizzle-orm/sqlite-core";
 import { relations, sql } from "drizzle-orm";
 import { z } from "zod";
-
-// Users table
-export const users = sqliteTable("users", {
-  id: text("id").primaryKey(),
-});
 
 // Sports types
 export const sports = sqliteTable("sports", {
@@ -53,30 +54,36 @@ export const operatingHours = sqliteTable("operating_hours", {
 });
 
 // Reservations
-export const reservations = sqliteTable("reservations", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id),
-  courtId: integer("court_id")
-    .notNull()
-    .references(() => courts.id),
-  startTime: integer("start_time", { mode: "timestamp" }).notNull(),
-  endTime: integer("end_time", { mode: "timestamp" }).notNull(),
-  totalPrice: real("total_price").notNull(),
-  status: text("status", { enum: ["pending", "confirmed", "cancelled"] })
-    .notNull()
-    .default("pending"),
-  paymentStatus: text("payment_status", {
-    enum: ["unpaid", "paid", "refunded"],
-  })
-    .notNull()
-    .default("unpaid"),
-  createdAt: integer("created_at", { mode: "timestamp" }).default(
-    sql`CURRENT_TIMESTAMP`
-  ),
-  notes: text("notes"),
-});
+export const reservations = sqliteTable(
+  "reservations",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: text("user_id").notNull(),
+    courtId: integer("court_id")
+      .notNull()
+      .references(() => courts.id),
+    startTime: integer("start_time", { mode: "timestamp" }).notNull(),
+    endTime: integer("end_time", { mode: "timestamp" }).notNull(),
+    totalPrice: real("total_price").notNull(),
+    status: text("status", { enum: ["pending", "confirmed", "cancelled"] })
+      .notNull()
+      .default("pending"),
+    paymentStatus: text("payment_status", {
+      enum: ["unpaid", "paid", "refunded"],
+    })
+      .notNull()
+      .default("unpaid"),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(
+      sql`CURRENT_TIMESTAMP`
+    ),
+    notes: text("notes"),
+  },
+  (table) => {
+    return {
+      userIdx: index("userIdx").on(table.userId),
+    };
+  }
+);
 
 // Relations
 export const venueRelations = relations(venues, ({ many }) => ({
@@ -104,10 +111,6 @@ export const operatingHoursRelations = relations(operatingHours, ({ one }) => ({
 }));
 
 export const reservationRelations = relations(reservations, ({ one }) => ({
-  user: one(users, {
-    fields: [reservations.userId],
-    references: [users.id],
-  }),
   court: one(courts, {
     fields: [reservations.courtId],
     references: [courts.id],
@@ -125,9 +128,6 @@ export const VenueCoordinates = z.object({
 export type VenueCoordinates = z.infer<typeof VenueCoordinates>;
 
 // Types for your application code
-export type User = typeof users.$inferSelect;
-export type NewUser = typeof users.$inferInsert;
-
 export type Venue = typeof venues.$inferSelect;
 export type NewVenue = typeof venues.$inferInsert;
 

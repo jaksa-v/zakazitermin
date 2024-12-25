@@ -1,12 +1,5 @@
 import { db } from "./index";
-import {
-  users,
-  sports,
-  venues,
-  courts,
-  operatingHours,
-  reservations,
-} from "./schema";
+import { sports, venues, courts, operatingHours, reservations } from "./schema";
 import { sql } from "drizzle-orm";
 
 async function seed() {
@@ -18,18 +11,6 @@ async function seed() {
   await db.run(sql`DELETE FROM courts`);
   await db.run(sql`DELETE FROM venues`);
   await db.run(sql`DELETE FROM sports`);
-  await db.run(sql`DELETE FROM users`);
-
-  // Seed users
-  console.log("Seeding users...");
-  const [user1] = await db
-    .insert(users)
-    .values([
-      {
-        id: "user_2pUHull96dOEuzvXHSEeoLZURY1",
-      },
-    ])
-    .returning();
 
   // Seed sports
   console.log("Seeding sports...");
@@ -213,7 +194,6 @@ async function seed() {
 
   await db.insert(reservations).values([
     {
-      userId: user1.id,
       courtId: courtsData[0].id,
       startTime: new Date(today.getTime() + 15 * 60 * 60 * 1000), // 3 PM today
       endTime: new Date(today.getTime() + 17 * 60 * 60 * 1000), // 5 PM today
@@ -221,9 +201,9 @@ async function seed() {
       status: "confirmed",
       paymentStatus: "paid",
       createdAt: new Date(),
+      userId: "user_2pZmwCs9N8AI5RfzreUictyKkEm",
     },
     {
-      userId: user1.id,
       courtId: courtsData[2].id,
       startTime: new Date(
         today.getTime() + 24 * 60 * 60 * 1000 + 10 * 60 * 60 * 1000
@@ -235,6 +215,7 @@ async function seed() {
       status: "confirmed",
       paymentStatus: "paid",
       createdAt: new Date(),
+      userId: "user_2pZmwCs9N8AI5RfzreUictyKkEm",
     },
   ]);
 
