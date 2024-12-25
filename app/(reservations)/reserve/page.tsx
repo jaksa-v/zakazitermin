@@ -1,4 +1,3 @@
-import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/db";
 import { courts, venues } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
