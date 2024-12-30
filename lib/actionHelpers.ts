@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from "zod";
-import { User } from "@/lib/db/schema";
 import { auth } from "@clerk/nextjs/server";
 
 export type ActionState = {
@@ -31,14 +30,14 @@ export function validatedAction<S extends z.ZodType<any, any>, T>(
 type ValidatedActionWithUserFunction<S extends z.ZodType<any, any>, T> = (
   data: z.infer<S>,
   formData: FormData,
-  user: User
+  user: { id: string }
 ) => Promise<T>;
 
 export function validatedActionWithUser<S extends z.ZodType<any, any>, T>(
   schema: S,
   action: ValidatedActionWithUserFunction<S, T>
 ) {
-  return async (prevState: ActionState, formData: FormData): Promise<T> => {
+  return async (_prevState: ActionState, formData: FormData): Promise<T> => {
     const { userId } = await auth();
     if (!userId) {
       throw new Error("User is not authenticated");
