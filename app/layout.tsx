@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/header";
+import { PostHogProvider } from "./posthog";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,18 +33,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <ClerkProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Header />
-            <main className="flex-1 flex flex-col">{children}</main>
-            <Toaster />
-          </ThemeProvider>
-        </ClerkProvider>
+        <PostHogProvider>
+          <ClerkProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Header />
+              <main className="flex-1 flex flex-col">{children}</main>
+              <Toaster />
+            </ThemeProvider>
+          </ClerkProvider>
+        </PostHogProvider>
       </body>
     </html>
   );

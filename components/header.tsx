@@ -33,7 +33,7 @@ function MobileNavigation() {
           <Menu className="h-6 w-6" />
         </button>
       </SheetTrigger>
-      <SheetContent side="left">
+      <SheetContent side="left" aria-describedby={undefined}>
         <SheetHeader className="mb-3 flex gap-2">
           <SheetTitle className="">
             <Link
