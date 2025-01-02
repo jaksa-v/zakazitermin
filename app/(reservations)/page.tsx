@@ -1,7 +1,15 @@
 import { getSports, getVenuesWithCourts } from "@/lib/db/queries";
 import VenueBrowser from "./venue-browser";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
+  const { orgId } = await auth();
+
+  if (orgId) {
+    throw redirect("/dashboard");
+  }
+
   const [venues, sports] = await Promise.all([
     getVenuesWithCourts(),
     getSports(),

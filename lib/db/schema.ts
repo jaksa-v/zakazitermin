@@ -16,16 +16,25 @@ export const sports = sqliteTable("sports", {
 });
 
 // Venues table
-export const venues = sqliteTable("venues", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull(),
-  address: text("address").notNull(),
-  city: text("city").notNull(),
-  phoneNumber: text("phone_number"),
-  description: text("description"),
-  amenitiesJson: text("amenities").notNull().$type<string>(),
-  coordinatesJson: text("coordinates").notNull().$type<string>(),
-});
+export const venues = sqliteTable(
+  "venues",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    name: text("name").notNull(),
+    address: text("address").notNull(),
+    city: text("city").notNull(),
+    phoneNumber: text("phone_number"),
+    description: text("description"),
+    amenitiesJson: text("amenities").notNull().$type<string>(),
+    coordinatesJson: text("coordinates").notNull().$type<string>(),
+    ownerId: text("owner_id").notNull(), // Clerk user ID of the venue owner
+  },
+  (table) => {
+    return {
+      ownerIdx: index("ownerIdx").on(table.ownerId),
+    };
+  }
+);
 
 // Courts/fields table
 export const courts = sqliteTable("courts", {

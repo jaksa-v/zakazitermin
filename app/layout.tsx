@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/header";
 import { PostHogProvider } from "./posthog";
+import { auth } from "@clerk/nextjs/server";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,11 +24,23 @@ export const metadata: Metadata = {
   description: "Organize your next sport game with ease",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { orgId } = await auth();
+
+  const navigation = [
+    { name: "Browse", href: "/" },
+    { name: "My reservations", href: "/my" },
+  ];
+
+  const protectedNavigation = [
+    { name: "Dashboard", href: "/dashboard" },
+    { name: "My Team", href: "/team" },
+  ];
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -41,7 +54,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <Header />
+              <Header navigation={orgId ? protectedNavigation : navigation} />
               <main className="flex-1 flex flex-col">{children}</main>
               <Toaster />
             </ThemeProvider>

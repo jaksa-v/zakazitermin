@@ -17,12 +17,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
-const navigation = [
-  { name: "Browse", href: "/" },
-  { name: "My reservations", href: "/my" },
-];
-
-function MobileNavigation() {
+function MobileNavigation({
+  navigation,
+}: {
+  navigation: { name: string; href: string }[];
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -72,7 +71,11 @@ function MobileNavigation() {
   );
 }
 
-function DesktopNavigation() {
+function DesktopNavigation({
+  navigation,
+}: {
+  navigation: { name: string; href: string }[];
+}) {
   const pathname = usePathname();
 
   return (
@@ -94,16 +97,20 @@ function DesktopNavigation() {
   );
 }
 
-export default function Header() {
+export default function Header({
+  navigation,
+}: {
+  navigation: { name: string; href: string }[];
+}) {
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b py-4 sm:py-1">
       <div className="max-w-screen-lg w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <MobileNavigation />
+          <MobileNavigation navigation={navigation} />
           <Link href="/" className="hidden lg:block">
             <Image src="/logo.png" alt="Zakazitermin" width={64} height={64} />
           </Link>
-          <DesktopNavigation />
+          <DesktopNavigation navigation={navigation} />
         </div>
         <div className="flex items-center gap-4">
           <ModeToggle />

@@ -50,6 +50,7 @@ async function seed() {
           "cafe",
         ]),
         coordinatesJson: JSON.stringify({ lat: 40.7128, lng: -74.006 }),
+        ownerId: "org_2r4yKQcREKBFMegYpjEWlp0JHgX",
       },
       {
         name: "Stampar Tereni",
@@ -60,6 +61,7 @@ async function seed() {
           "Spacious sports complex with indoor and outdoor facilities",
         amenitiesJson: JSON.stringify(["parking", "AC", "cafe"]),
         coordinatesJson: JSON.stringify({ lat: 40.7549, lng: -73.984 }),
+        ownerId: "org_2r4yKQcREKBFMegYpjEWlp0JHgX",
       },
       {
         name: "Sutjeska Tereni",
@@ -69,6 +71,7 @@ async function seed() {
         description: "Spacious soccer terrains with outdoor facilities",
         amenitiesJson: JSON.stringify(["parking", "cafe"]),
         coordinatesJson: JSON.stringify({ lat: 40.7549, lng: -73.984 }),
+        ownerId: "org_2r4yKQcREKBFMegYpjEWlp0JHgX",
       },
       {
         name: "Toloska Tereni",
@@ -83,6 +86,7 @@ async function seed() {
           "calisthenics",
         ]),
         coordinatesJson: JSON.stringify({ lat: 40.7549, lng: -73.984 }),
+        ownerId: "org_2r4yKQcREKBFMegYpjEWlp0JHgX",
       },
     ])
     .returning();
