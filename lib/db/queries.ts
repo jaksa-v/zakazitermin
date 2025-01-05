@@ -44,7 +44,7 @@ export async function getUserReservations(userId: string) {
       court: true,
     },
     where: eq(reservations.userId, userId),
-    orderBy: (reservations, { desc }) => desc(reservations.startTime),
+    orderBy: (reservations, { asc }) => asc(reservations.startTime),
   });
 
   const upcoming = userReservations.filter(

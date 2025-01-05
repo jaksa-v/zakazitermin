@@ -102,6 +102,11 @@ export default function Header({
 }: {
   navigation: { name: string; href: string }[];
 }) {
+  const pathname = usePathname();
+  const authRoutes = ['/sign-in', '/sign-up']
+
+  if (authRoutes.includes(pathname)) return null
+
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b py-4 sm:py-1">
       <div className="max-w-screen-lg w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
