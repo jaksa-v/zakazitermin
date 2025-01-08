@@ -2,7 +2,7 @@ import { getUserReservations } from "@/lib/db/queries";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import ReservationList from "./reservation-list";
+import ReservationList from "@/components/reservation-list";
 
 export default async function MyReservationsPage() {
   const { userId } = await auth();
@@ -31,11 +31,11 @@ export default async function MyReservationsPage() {
         </TabsList>
 
         <TabsContent value="upcoming" className="mt-6">
-          <ReservationList reservations={upcoming} upcoming={true} />
+          <ReservationList reservations={upcoming} />
         </TabsContent>
 
         <TabsContent value="past" className="mt-6">
-          <ReservationList reservations={past} upcoming={false} />
+          <ReservationList reservations={past} />
         </TabsContent>
       </Tabs>
     </div>

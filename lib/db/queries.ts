@@ -1,6 +1,6 @@
 import { and, eq, gte } from "drizzle-orm";
 import { db } from ".";
-import { reservations } from "./schema";
+import { reservations, venues } from "./schema";
 import { startOfToday } from "date-fns";
 
 export async function getVenuesWithCourts() {
@@ -55,4 +55,41 @@ export async function getUserReservations(userId: string) {
   );
 
   return { upcoming, past };
+}
+
+export async function getCourtReservations(courtId: number) {
+  const now = new Date();
+
+  const courtReservations = await db.query.reservations.findMany({
+    with: {
+      court: true,
+    },
+    where: eq(reservations.courtId, courtId),
+    orderBy: (reservations, { asc }) => asc(reservations.startTime),
+  });
+
+  const upcoming = courtReservations.filter(
+    (reservation) => reservation.startTime > now
+  );
+  const past = courtReservations.filter(
+    (reservation) => reservation.startTime <= now
+  );
+
+  return { upcoming, past };
+}
+
+export async function getOrganizationVenuesWithCourts(orgId: string) {
+  const venuesWithCourts = await db.query.venues.findMany({
+    with: {
+      courts: {
+        with: {
+          sport: true,
+        },
+      },
+      operatingHours: true,
+    },
+    where: eq(venues.ownerId, orgId),
+  });
+
+  return venuesWithCourts;
 }
