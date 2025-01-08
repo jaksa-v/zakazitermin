@@ -94,7 +94,7 @@ function PushNotificationManager() {
   );
 }
 
-export function InstallPrompt() {
+function InstallPrompt() {
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
 
