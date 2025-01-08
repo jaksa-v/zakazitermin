@@ -10,7 +10,7 @@ export default function ReservationList({
 }: ReservationListProps) {
   if (!reservations.length) {
     return (
-      <div className="text-muted-foreground text-center py-4">
+      <div className="text-muted-foreground text-center py-6">
         No reservations found
       </div>
     );

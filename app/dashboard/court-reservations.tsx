@@ -3,60 +3,16 @@
 import { useCourtContext } from "./court-context";
 import ReservationList from "@/components/reservation-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useEffect, useState } from "react";
-import { ReservationWithCourt } from "@/lib/db/schema";
+import { useCourtReservations } from "@/hooks/use-court-reservations";
+import { Loader2 } from "lucide-react";
 
 export default function CourtReservations() {
   const { selectedCourt } = useCourtContext();
-  const [reservations, setReservations] = useState<{
-    upcoming: ReservationWithCourt[];
-    past: ReservationWithCourt[];
-  } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { reservations, isLoading, error } =
+    useCourtReservations(selectedCourt);
 
-  useEffect(() => {
-    async function fetchReservations() {
-      if (!selectedCourt) {
-        setReservations(null);
-        return;
-      }
-
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(
-          `/api/courts/${selectedCourt.id}/reservations`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch reservations");
-        }
-        const data = await response.json();
-        setReservations(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-        setReservations(null);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchReservations();
-  }, [selectedCourt]);
-
-  // Return null on first render to avoid hydration mismatch
   if (!selectedCourt) {
     return null;
-  }
-
-  // Only show loading after initial render
-  if (isLoading) {
-    return (
-      <div className="text-muted-foreground text-center py-8">
-        Loading reservations...
-      </div>
-    );
   }
 
   if (error) {
@@ -76,10 +32,22 @@ export default function CourtReservations() {
         <TabsTrigger value="past">Past</TabsTrigger>
       </TabsList>
       <TabsContent value="upcoming">
-        <ReservationList reservations={reservations.upcoming} />
+        {isLoading ? (
+          <div className="text-muted-foreground text-center py-6 flex justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <ReservationList reservations={reservations.upcoming} />
+        )}
       </TabsContent>
       <TabsContent value="past">
-        <ReservationList reservations={reservations.past} />
+        {isLoading ? (
+          <div className="text-muted-foreground text-center py-6 flex justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <ReservationList reservations={reservations.past} />
+        )}
       </TabsContent>
     </Tabs>
   );
