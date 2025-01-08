@@ -22,6 +22,9 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Zakazitermin",
   description: "Organize your next sport game with ease",
+  appleWebApp: {
+    title: "Zakazi",
+  },
 };
 
 export default async function RootLayout({
