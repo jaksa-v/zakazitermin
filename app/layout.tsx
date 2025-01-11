@@ -8,6 +8,7 @@ import Header from "@/components/header";
 import { PostHogProvider } from "./posthog";
 import { auth } from "@clerk/nextjs/server";
 import { ThemeColorSync } from "@/components/theme-color-sync";
+import { PWAInstallModal } from "@/components/PWAInstallModal";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -68,6 +69,7 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <ThemeColorSync />
+              <PWAInstallModal />
               <Header navigation={orgId ? protectedNavigation : navigation} />
               <main className="flex-1 flex flex-col">{children}</main>
               <Toaster />
