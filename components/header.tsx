@@ -6,93 +6,58 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "@/components/mode-toggle";
 import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
-import { Menu } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import * as Icons from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 
-function MobileNavigation({
-  navigation,
-}: {
-  navigation: { name: string; href: string }[];
-}) {
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-
+function MobileNavigation() {
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <button className="lg:hidden">
-          <Menu className="h-6 w-6" />
-        </button>
-      </SheetTrigger>
-      <SheetContent side="left" aria-describedby={undefined}>
-        <SheetHeader className="mb-3 flex gap-2">
-          <SheetTitle className="">
-            <Link
-              href="/"
-              className="flex justify-center"
-              onClick={() => setOpen(false)}
-            >
-              <Image
-                src="/logo.png"
-                alt="Zakazitermin"
-                width={64}
-                height={64}
-                priority={true}
-              />
-            </Link>
-          </SheetTitle>
-        </SheetHeader>
-        <div className="flex flex-col">
-          {navigation.map((item) => (
-            <Button
-              key={item.href}
-              variant="ghost"
-              asChild
-              className={cn(
-                pathname === item.href && "bg-secondary",
-                "text-foreground text-base"
-              )}
-              onClick={() => setOpen(false)}
-            >
-              <Link href={item.href}>{item.name}</Link>
-            </Button>
-          ))}
-        </div>
-      </SheetContent>
-    </Sheet>
+    <Link href="/" className="lg:hidden">
+      <Image
+        src="/logo.png"
+        alt="Zakazitermin"
+        width={48}
+        height={48}
+        priority={true}
+      />
+    </Link>
   );
 }
 
 function DesktopNavigation({
   navigation,
 }: {
-  navigation: { name: string; href: string }[];
+  navigation: { name: string; href: string; icon: string }[];
 }) {
   const pathname = usePathname();
 
   return (
     <div className="hidden lg:flex items-center">
-      {navigation.map((item) => (
-        <Button
-          key={item.href}
-          variant="link"
-          asChild
-          className={cn(
-            pathname === item.href && "underline underline-offset-4",
-            "text-foreground text-base"
-          )}
-        >
-          <Link href={item.href}>{item.name}</Link>
-        </Button>
-      ))}
+      {navigation.map((item) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const Icon = (Icons as any)[
+          item.icon
+            .split("-")
+            .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+            .join("")
+        ];
+
+        return (
+          <Button
+            key={item.href}
+            variant="link"
+            asChild
+            className={cn(
+              pathname === item.href && "underline underline-offset-4",
+              "text-foreground text-base"
+            )}
+          >
+            <Link href={item.href} className="flex items-center gap-2">
+              {Icon && <Icon className="h-4 w-4" />}
+              {item.name}
+            </Link>
+          </Button>
+        );
+      })}
     </div>
   );
 }
@@ -100,18 +65,18 @@ function DesktopNavigation({
 export default function Header({
   navigation,
 }: {
-  navigation: { name: string; href: string }[];
+  navigation: { name: string; href: string; icon: string }[];
 }) {
   const pathname = usePathname();
-  const authRoutes = ['/sign-in', '/sign-up']
+  const authRoutes = ["/sign-in", "/sign-up"];
 
-  if (authRoutes.includes(pathname)) return null
+  if (authRoutes.includes(pathname)) return null;
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b py-4 sm:py-1">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b py-1">
       <div className="max-w-screen-lg w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <MobileNavigation navigation={navigation} />
+          <MobileNavigation />
           <Link href="/" className="hidden lg:block">
             <Image src="/logo.png" alt="Zakazitermin" width={64} height={64} />
           </Link>

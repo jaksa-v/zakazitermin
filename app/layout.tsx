@@ -8,7 +8,8 @@ import Header from "@/components/header";
 import { PostHogProvider } from "./posthog";
 import { auth } from "@clerk/nextjs/server";
 import { ThemeColorSync } from "@/components/theme-color-sync";
-import { PWAInstallModal } from "@/components/PWAInstallModal";
+import BottomNavigation from "@/components/bottom-navigation";
+// import { PWAInstallModal } from "@/components/PWAInstallModal";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -39,14 +40,14 @@ export default async function RootLayout({
   const { orgId } = await auth();
 
   const navigation = [
-    { name: "Browse", href: "/" },
-    { name: "My reservations", href: "/my" },
-    { name: "Notification Test", href: "/notification-test" },
+    { name: "Browse", href: "/", icon: "home" },
+    { name: "Reservations", href: "/my", icon: "calendar" },
+    { name: "Notifications", href: "/notification-test", icon: "bell" },
   ];
 
   const protectedNavigation = [
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "My Team", href: "/team" },
+    { name: "Dashboard", href: "/dashboard", icon: "layout-dashboard" },
+    { name: "My Team", href: "/team", icon: "users" },
   ];
 
   return (
@@ -70,9 +71,14 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <ThemeColorSync />
-              <PWAInstallModal />
+              {/* <PWAInstallModal /> */}
               <Header navigation={orgId ? protectedNavigation : navigation} />
-              <main className="flex-1 flex flex-col">{children}</main>
+              <main className="flex-1 flex flex-col pb-[calc(9rem+env(safe-area-inset-bottom))] lg:pb-0">
+                {children}
+              </main>
+              <BottomNavigation
+                navigation={orgId ? protectedNavigation : navigation}
+              />
               <Toaster />
             </ThemeProvider>
           </ClerkProvider>
