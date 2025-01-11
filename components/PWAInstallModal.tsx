@@ -93,7 +93,10 @@ export function PWAInstallModal() {
 
   return (
     <SignedIn>
-      <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose(false)}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => !open && handleClose(false)}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Install Our App</DialogTitle>
@@ -101,7 +104,7 @@ export function PWAInstallModal() {
           <div className="space-y-4">
             <DialogDescription className="text-muted-foreground text-justify">
               For the best experience, we recommend installing our app on your
-              device and enable notifications.
+              device and enabling notifications.
             </DialogDescription>
             <div className="bg-muted p-4 rounded-lg whitespace-pre-line">
               {getPWAInstructions()}
@@ -113,8 +116,8 @@ export function PWAInstallModal() {
                     Important - Enable Notifications
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Get notified about schedule updates and reminders by enabling
-                    push notifications
+                    Get notified about schedule updates and reminders by
+                    enabling push notifications
                   </p>
                 </div>
                 <Button

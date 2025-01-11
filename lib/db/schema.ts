@@ -94,6 +94,47 @@ export const reservations = sqliteTable(
   }
 );
 
+// Push notifications
+export const pushSubscriptions = sqliteTable(
+  "push_subscriptions",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: text("user_id").notNull(),
+    endpoint: text("endpoint").notNull(),
+    p256dh: text("p256dh").notNull(),
+    auth: text("auth").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(
+      sql`CURRENT_TIMESTAMP`
+    ),
+  },
+  (table) => {
+    return {
+      userIdx: index("push_sub_userIdx").on(table.userId),
+      endpointIdx: index("endpointIdx").on(table.endpoint),
+    };
+  }
+);
+
+export const notifications = sqliteTable(
+  "notifications",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    userId: text("user_id").notNull(),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    icon: text("icon"),
+    sent: integer("sent", { mode: "boolean" }).default(false),
+    createdAt: integer("created_at", { mode: "timestamp" }).default(
+      sql`CURRENT_TIMESTAMP`
+    ),
+  },
+  (table) => {
+    return {
+      userIdx: index("notification_userIdx").on(table.userId),
+    };
+  }
+);
+
 // Relations
 export const venueRelations = relations(venues, ({ many }) => ({
   courts: many(courts),

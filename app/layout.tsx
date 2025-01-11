@@ -41,6 +41,7 @@ export default async function RootLayout({
   const navigation = [
     { name: "Browse", href: "/" },
     { name: "My reservations", href: "/my" },
+    { name: "Notification Test", href: "/notification-test" },
   ];
 
   const protectedNavigation = [
