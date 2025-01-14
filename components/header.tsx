@@ -83,7 +83,6 @@ export default function Header({
           <DesktopNavigation navigation={navigation} />
         </div>
         <div className="flex items-center gap-4">
-          <ModeToggle />
           <SignedIn>
             <UserButton />
           </SignedIn>
@@ -94,6 +93,7 @@ export default function Header({
               </button>
             </SignInButton>
           </SignedOut>
+          <ModeToggle />
         </div>
       </div>
     </header>

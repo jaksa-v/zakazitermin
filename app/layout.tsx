@@ -4,12 +4,10 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import Header from "@/components/header";
 import { PostHogProvider } from "./posthog";
-import { auth } from "@clerk/nextjs/server";
 import { ThemeColorSync } from "@/components/theme-color-sync";
-import BottomNavigation from "@/components/bottom-navigation";
-// import { PWAInstallModal } from "@/components/PWAInstallModal";
+import { Suspense } from "react";
+import { AuthenticatedLayout } from "@/components/authenticated-layout";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -17,6 +15,7 @@ const geistSans = localFont({
   weight: "100 900",
   display: "swap",
 });
+
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
@@ -32,25 +31,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { orgId } = await auth();
-
-  const navigation = [
-    { name: "Browse", href: "/", icon: "home" },
-    { name: "Reservations", href: "/my", icon: "calendar" },
-  ];
-
-  const protectedNavigation = [
-    { name: "Dashboard", href: "/dashboard", icon: "layout-dashboard" },
-    { name: "My Team", href: "/team", icon: "users" },
-  ];
-
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta
           name="theme-color"
@@ -70,12 +57,12 @@ export default async function RootLayout({
               disableTransitionOnChange
             >
               <ThemeColorSync />
-              {/* <PWAInstallModal /> */}
-              <Header navigation={orgId ? protectedNavigation : navigation} />
-              <main className="flex-1 flex flex-col lg:pb-0">{children}</main>
-              <BottomNavigation
-                navigation={orgId ? protectedNavigation : navigation}
-              />
+              <div className="flex min-h-screen flex-col">
+                <Suspense fallback={null}>
+                  <AuthenticatedLayout />
+                </Suspense>
+                <main className="flex-1 flex flex-col lg:pb-0">{children}</main>
+              </div>
               <Toaster />
             </ThemeProvider>
           </ClerkProvider>

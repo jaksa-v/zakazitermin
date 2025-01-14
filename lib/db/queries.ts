@@ -1,9 +1,13 @@
+import { cache } from "react";
 import { and, eq, gte } from "drizzle-orm";
 import { db } from ".";
 import { reservations, venues } from "./schema";
 import { startOfToday } from "date-fns";
+import { unstable_cacheTag as cacheTag } from "next/cache";
 
-export async function getVenuesWithCourts() {
+export const getVenuesWithCourts = cache(async () => {
+  "use cache";
+  cacheTag("venues");
   // get venues along with their courts and operating hours
   const venuesWithCourts = await db.query.venues.findMany({
     with: {
@@ -17,13 +21,15 @@ export async function getVenuesWithCourts() {
   });
 
   return venuesWithCourts;
-}
+});
 
-export async function getSports() {
+export const getSports = cache(async () => {
+  "use cache";
+  cacheTag("sports");
   return db.query.sports.findMany();
-}
+});
 
-export async function getUpcomingReservations(courtId: number) {
+export const getUpcomingReservations = cache(async (courtId: number) => {
   const today = startOfToday();
 
   const upcomingReservations = await db.query.reservations.findMany({
@@ -34,17 +40,16 @@ export async function getUpcomingReservations(courtId: number) {
   });
 
   return upcomingReservations;
-}
+});
 
-export async function getUserReservations(userId: string) {
-  const now = new Date();
+export const getUserReservations = cache(async (userId: string) => {
+  const now = startOfToday();
 
   const userReservations = await db.query.reservations.findMany({
     with: {
       court: true,
     },
     where: eq(reservations.userId, userId),
-    orderBy: (reservations, { asc }) => asc(reservations.startTime),
   });
 
   const upcoming = userReservations.filter(
@@ -55,17 +60,16 @@ export async function getUserReservations(userId: string) {
   );
 
   return { upcoming, past };
-}
+});
 
-export async function getCourtReservations(courtId: number) {
-  const now = new Date();
+export const getCourtReservations = cache(async (courtId: number) => {
+  const now = startOfToday();
 
   const courtReservations = await db.query.reservations.findMany({
     with: {
       court: true,
     },
     where: eq(reservations.courtId, courtId),
-    orderBy: (reservations, { asc }) => asc(reservations.startTime),
   });
 
   const upcoming = courtReservations.filter(
@@ -76,9 +80,11 @@ export async function getCourtReservations(courtId: number) {
   );
 
   return { upcoming, past };
-}
+});
 
-export async function getOrganizationVenuesWithCourts(orgId: string) {
+export const getOrganizationVenuesWithCourts = cache(async (orgId: string) => {
+  "use cache";
+  cacheTag("organization", orgId);
   const venuesWithCourts = await db.query.venues.findMany({
     with: {
       courts: {
@@ -92,4 +98,4 @@ export async function getOrganizationVenuesWithCourts(orgId: string) {
   });
 
   return venuesWithCourts;
-}
+});

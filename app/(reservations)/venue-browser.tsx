@@ -64,9 +64,6 @@ const VenueBrowser: FC<VenueBrowserProps> = ({ venues, sports }) => {
 
   return (
     <div className="mx-auto space-y-4 sm:space-y-6">
-      <h1 className="my-3 sm:my-4 text-xl sm:text-2xl font-bold">
-        Browse Venues
-      </h1>
       <VenueFilters
         sports={sports}
         searchInput={searchInput}
