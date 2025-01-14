@@ -42,7 +42,6 @@ export default async function RootLayout({
   const navigation = [
     { name: "Browse", href: "/", icon: "home" },
     { name: "Reservations", href: "/my", icon: "calendar" },
-    { name: "Notifications", href: "/notification-test", icon: "bell" },
   ];
 
   const protectedNavigation = [
@@ -51,7 +50,7 @@ export default async function RootLayout({
   ];
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
         <meta
           name="theme-color"
@@ -73,9 +72,7 @@ export default async function RootLayout({
               <ThemeColorSync />
               {/* <PWAInstallModal /> */}
               <Header navigation={orgId ? protectedNavigation : navigation} />
-              <main className="flex-1 flex flex-col pb-[calc(9rem+env(safe-area-inset-bottom))] lg:pb-0">
-                {children}
-              </main>
+              <main className="flex-1 flex flex-col lg:pb-0">{children}</main>
               <BottomNavigation
                 navigation={orgId ? protectedNavigation : navigation}
               />

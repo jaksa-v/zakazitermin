@@ -13,7 +13,7 @@ export default function BottomNavigation({
   const pathname = usePathname();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background border-t lg:hidden pb-[calc(1rem+env(safe-area-inset-bottom))]">
+    <div className="fixed bottom-0 left-0 right-0 bg-background border-t lg:hidden">
       <nav className="flex justify-around items-center h-16 max-w-md mx-auto px-4">
         {navigation.map((item) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
