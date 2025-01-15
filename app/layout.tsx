@@ -5,7 +5,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { PostHogProvider } from "./posthog";
-import { ThemeColorSync } from "@/components/theme-color-sync";
 import { Suspense } from "react";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
 
@@ -56,7 +55,6 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <ThemeColorSync />
               <div className="flex min-h-screen flex-col">
                 <Suspense fallback={null}>
                   <AuthenticatedLayout />
