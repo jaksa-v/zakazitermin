@@ -1,7 +1,9 @@
+"use cache";
+
 import { Suspense } from "react";
 import { SignIn } from "@clerk/nextjs";
 
-export default function Page() {
+export default async function Page() {
   return (
     <Suspense
       fallback={
